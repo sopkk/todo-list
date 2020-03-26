@@ -1,0 +1,13 @@
+.list-group {
+  width: 30%;
+  margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+}
+
+@media (max-width: 300px) {
+  .list-group {
+    width: 90%;
+  }
+}
