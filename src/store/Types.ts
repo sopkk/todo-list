@@ -1,8 +1,8 @@
-export interface TodosType {
-  [id: string]: TodoType;
+export interface ITodos {
+  [id: string]: ITodo;
 }
 
-export interface TodoType {
+export interface ITodo {
   title: string;
   done: boolean;
 }

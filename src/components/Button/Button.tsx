@@ -4,17 +4,17 @@ interface Props {
   name: string;
   type: "button" | "submit" | "reset";
   className: string;
-  handleClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 const Button: React.FunctionComponent<Props> = ({
   name,
   type,
   className,
-  handleClick,
+  onClick,
   children
 }) => (
-  <button name={name} type={type} className={className} onClick={handleClick}>
+  <button name={name} type={type} className={className} onClick={onClick}>
     {children}
   </button>
 );

@@ -1,83 +1,76 @@
 import * as React from "react";
 
-import "./Todo.css";
-import Input from "../Input/Input";
 import Button from "../Button/Button";
+import Input from "../Input/Input";
+import "./Todo.css";
 
 interface Props {
   id: string;
   title: string;
-  done: boolean;
-  editingMode: boolean;
-  handleChange: (id: string) => void;
-  handleClick: (id: string) => void;
-  handleSaveChanges: (id: string, todoTitle: string) => void;
-  handleCancel: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => void;
-  handleDelete: (id: string) => void;
+  isDone: boolean;
+  isEditMode: boolean;
+  onChange: (id: string) => () => void;
+  onClick: (id: string) => () => void;
+  onSave: (id: string, todoTitle: string) => void;
+  onCancel: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onDelete: (id: string) => void;
 }
 
 const Todo: React.FunctionComponent<Props> = ({
   id,
   title,
-  done,
-  editingMode,
-  handleChange,
-  handleClick,
-  handleSaveChanges,
-  handleCancel,
-  handleDelete
+  isDone,
+  isEditMode,
+  onChange,
+  onClick,
+  onSave,
+  onCancel,
+  onDelete
 }) => {
   const [todoTitle, setTodoTitle] = React.useState<string>(title);
-  const [deleteButton, setDeleteButton] = React.useState<JSX.Element | null>(
-    null
-  );
+  const [hoveredTodo, setHoveredTodo] = React.useState<string>("-1");
 
-  const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTodoTitle(event.target.value);
   };
 
-  const onDeleteHandler = (
+  const handleOnDelete = (
     event: React.MouseEvent<HTMLImageElement, MouseEvent>
   ) => {
     event.stopPropagation();
-    handleDelete(id);
+    onDelete(id);
   };
 
-  const onMouseEnterHandler = (
+  const deleteButton = (
+    <img
+      src="https://i.ya-webdesign.com/images/edit-delete-icon-png-4.png"
+      alt="X"
+      className="delete-icon"
+      onClick={handleOnDelete}
+    />
+  );
+  const handleOnMouseEnter = (id: string) => () => {
+    setHoveredTodo(id);
+  };
+
+  const handleOnMouseLeave = (
     event: React.MouseEvent<HTMLLIElement, MouseEvent>
   ) => {
-    if (!editingMode) {
-      setDeleteButton(
-        <img
-          src="https://i.ya-webdesign.com/images/edit-delete-icon-png-4.png"
-          alt="X"
-          className="delete-icon"
-          onClick={onDeleteHandler}
-        />
-      );
-    }
+    setHoveredTodo("-1");
   };
 
-  const onMouseLeaveHandler = (
-    event: React.MouseEvent<HTMLLIElement, MouseEvent>
-  ) => {
-    setDeleteButton(null);
-  };
-
-  const onClickHandler = (
+  const handleOnClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.stopPropagation();
-    handleSaveChanges(id, todoTitle);
+    onSave(id, todoTitle);
   };
 
-  const onCancelHandler = (
+  const handleOnCancel = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     setTodoTitle(title);
-    handleCancel(event);
+    onCancel(event);
   };
 
   const editInput: JSX.Element = (
@@ -87,14 +80,14 @@ const Todo: React.FunctionComponent<Props> = ({
         type="text"
         value={todoTitle}
         className="form-control"
-        handleChange={onChangeHandler}
+        onChange={handleOnChange}
       />
       <div className="input-group-append">
         <Button
           name="save-button"
           className="btn btn-outline-secondary"
           type="button"
-          handleClick={onClickHandler}
+          onClick={handleOnClick}
         >
           ✓
         </Button>
@@ -102,41 +95,33 @@ const Todo: React.FunctionComponent<Props> = ({
           name="cancel-button"
           className="btn btn-outline-secondary"
           type="button"
-          handleClick={onCancelHandler}
+          onClick={handleOnCancel}
         >
           &times;
         </Button>
       </div>
     </div>
   );
-
   return (
     <li
       key={id}
       className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-      onMouseEnter={onMouseEnterHandler}
-      onMouseLeave={onMouseLeaveHandler}
+      onMouseEnter={handleOnMouseEnter(id)}
+      onMouseLeave={handleOnMouseLeave}
     >
-      <div
-        className="todo-div"
-        onClick={() => {
-          handleClick(id);
-        }}
-      >
-        {editingMode ? editInput : title}
+      <div className="todo-div" onClick={onClick(id)}>
+        {isEditMode ? editInput : title}
       </div>
       <div className="input-group-prepend">
-        {deleteButton}
+        {!isEditMode && hoveredTodo === id && deleteButton}
         <div className="input-group-text">
           <Input
             type="checkbox"
             className=""
-            checked={done}
+            checked={isDone}
             value=""
             name="done"
-            handleChange={() => {
-              handleChange(id);
-            }}
+            onChange={onChange(id)}
           />
         </div>
       </div>

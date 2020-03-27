@@ -7,7 +7,7 @@ interface Props {
   placeholder?: string;
   checked?: boolean;
   className: string;
-  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Input: React.FunctionComponent<Props> = ({
@@ -17,7 +17,7 @@ const Input: React.FunctionComponent<Props> = ({
   placeholder,
   checked,
   className,
-  handleChange
+  onChange
 }) => {
   switch (type) {
     case "text":
@@ -28,7 +28,7 @@ const Input: React.FunctionComponent<Props> = ({
           placeholder={placeholder}
           className={className}
           value={value}
-          onChange={handleChange}
+          onChange={onChange}
         />
       );
     case "checkbox":
@@ -38,7 +38,7 @@ const Input: React.FunctionComponent<Props> = ({
           type={type}
           checked={checked}
           className={className}
-          onChange={handleChange}
+          onChange={onChange}
         />
       );
     default:
@@ -48,7 +48,7 @@ const Input: React.FunctionComponent<Props> = ({
           type="text"
           placeholder={placeholder}
           className={className}
-          onChange={handleChange}
+          onChange={onChange}
         />
       );
   }

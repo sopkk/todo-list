@@ -1,18 +1,18 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import "./TodoContainer.css";
-import { TodoType } from "../../store/Types";
-import Modal from "../../components/Modal/Modal";
-import Todos from "../../components/Todos/Todos";
-import Button from "../../components/Button/Button";
-import { State } from "../../store/reducers/todoReducer";
 import * as todoActions from "../../store/actions/todoActions";
+import { State } from "../../store/reducers/todoReducer";
+import Button from "../../components/Button/Button";
+import Todos from "../../components/Todos/Todos";
+import Modal from "../../components/Modal/Modal";
+import { ITodo } from "../../store/Types";
+import "./TodoContainer.css";
 
 export const ADD_TODO = "Add a todo";
 
 const TodoContainer: React.FunctionComponent = () => {
-  const [modal, setModal] = React.useState<JSX.Element | null>(null);
+  const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
   const dispatch = useDispatch();
   React.useEffect(() => {
@@ -21,30 +21,28 @@ const TodoContainer: React.FunctionComponent = () => {
 
   const todos = useSelector((state: State) => state.todos);
 
-  const handleClose = () => {
-    setModal(null);
+  const handleOnClose = () => {
+    setIsOpen(false);
   };
 
-  const handleClick = () => {
-    setModal(
-      <Modal handleSaveChanges={handleAddNewTodo} handleClose={handleClose} />
-    );
+  const handleOnClick = () => {
+    setIsOpen(true);
   };
 
-  const handleAddNewTodo = (todo: TodoType) => {
+  const handleOnAdd = (todo: ITodo) => {
     dispatch(todoActions.addTodo(todo));
-    handleClose();
+    handleOnClose();
   };
 
-  const handleTodoDoneChange = (id: string) => {
+  const handleOnChange = (id: string) => () => {
     dispatch(todoActions.editCheckedTodo(id, !todos[id].done));
   };
 
-  const handleSaveChanges = (id: string, todoTitle: string) => {
+  const handleOnSave = (id: string, todoTitle: string) => {
     dispatch(todoActions.editTodoTitle(id, todoTitle));
   };
 
-  const handleDeleteTodo = (id: string) => {
+  const handleOnDelete = (id: string) => {
     dispatch(todoActions.deleteTodo(id));
   };
 
@@ -54,17 +52,17 @@ const TodoContainer: React.FunctionComponent = () => {
         type="button"
         name=""
         className="btn btn-info"
-        handleClick={handleClick}
+        onClick={handleOnClick}
       >
         Add a todo
       </Button>
       <Todos
         todos={todos}
-        handleCheckboxChange={handleTodoDoneChange}
-        handleSaveChanges={handleSaveChanges}
-        handleDelete={handleDeleteTodo}
+        onChange={handleOnChange}
+        onSave={handleOnSave}
+        onDelete={handleOnDelete}
       />
-      {modal}
+      <Modal onSave={handleOnAdd} onClose={handleOnClose} isOpen={isOpen} />
     </div>
   );
 };

@@ -1,37 +1,28 @@
 import * as React from "react";
 
-import "./Modal.css";
-import Input from "../Input/Input";
+import { ITodo } from "../../store/Types";
 import Button from "../Button/Button";
-import { TodoType } from "../../store/Types";
+import Input from "../Input/Input";
+import "./Modal.css";
 
 interface Props {
-  handleClose: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  handleSaveChanges: (todo: TodoType) => void;
+  isOpen: boolean;
+  onClose: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onSave: (todo: ITodo) => void;
 }
 
-const Modal: React.FunctionComponent<Props> = ({
-  handleClose,
-  handleSaveChanges
-}) => {
-  const [todo, setTodo] = React.useState<TodoType>({
+const Modal: React.FunctionComponent<Props> = ({ isOpen, onClose, onSave }) => {
+  const [todo, setTodo] = React.useState<ITodo>({
     title: "",
     done: false
   });
 
-  const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.target.type === "checkbox"
-      ? setTodo({
-          ...todo,
-          [event.target.name]: event.target.checked
-        })
-      : setTodo({
-          ...todo,
-          [event.target.name]: event.target.value
-        });
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { type, checked, value, name } = event.target;
+    setTodo({ ...todo, [name]: type === "checkbox" ? checked : value });
   };
 
-  return (
+  return isOpen ? (
     <div className="modal" role="dialog">
       <div className="modal-dialog" role="document">
         <div className="modal-content">
@@ -41,7 +32,7 @@ const Modal: React.FunctionComponent<Props> = ({
               name="close-modal-x"
               type="button"
               className="close"
-              handleClick={handleClose}
+              onClick={onClose}
             >
               <span aria-hidden="true">&times;</span>
             </Button>
@@ -53,7 +44,7 @@ const Modal: React.FunctionComponent<Props> = ({
               placeholder="title"
               className="form-control"
               value={todo.title}
-              handleChange={onChangeHandler}
+              onChange={handleOnChange}
             />
             <div className="form-check">
               <Input
@@ -61,7 +52,7 @@ const Modal: React.FunctionComponent<Props> = ({
                 type="checkbox"
                 className="form-check-input"
                 value=""
-                handleChange={onChangeHandler}
+                onChange={handleOnChange}
               />
               <label className="form-check-label">Done</label>
             </div>
@@ -71,8 +62,8 @@ const Modal: React.FunctionComponent<Props> = ({
               type="button"
               name="save-changes"
               className="btn btn-primary"
-              handleClick={() => {
-                handleSaveChanges(todo);
+              onClick={() => {
+                onSave(todo);
               }}
             >
               Save changes
@@ -81,7 +72,7 @@ const Modal: React.FunctionComponent<Props> = ({
               type="button"
               name="close-modal"
               className="btn btn-secondary"
-              handleClick={handleClose}
+              onClick={onClose}
             >
               Close
             </Button>
@@ -89,7 +80,7 @@ const Modal: React.FunctionComponent<Props> = ({
         </div>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 export default Modal;

@@ -1,59 +1,57 @@
 import * as React from "react";
 
-import "./Todos.css";
+import { ITodos } from "../../store/Types";
 import Todo from "../Todo/Todo";
-import { TodosType } from "../../store/Types";
+import "./Todos.css";
 
 const EDITING_MODE_FALSE: string = "-1";
 
 interface Props {
-  todos: TodosType;
-  handleCheckboxChange: (id: string) => void;
-  handleSaveChanges: (id: string, todoTitle: string) => void;
-  handleDelete: (id: string) => void;
+  todos: ITodos;
+  onChange: (id: string) => () => void;
+  onSave: (id: string, todoTitle: string) => void;
+  onDelete: (id: string) => void;
 }
 
 const Todos: React.FunctionComponent<Props> = ({
   todos,
-  handleCheckboxChange,
-  handleSaveChanges,
-  handleDelete
+  onChange,
+  onSave,
+  onDelete
 }) => {
   const [editedTodo, setEditedTodo] = React.useState<string>(
     EDITING_MODE_FALSE
   );
 
-  const onClickedHandler = (id: string) => {
+  const handleOnClick = (id: string) => () => {
     setEditedTodo(id);
   };
 
-  const onCancelHandler = (
+  const handleOnCancel = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.stopPropagation();
     setEditedTodo(EDITING_MODE_FALSE);
   };
 
-  const onSaveChangesHandler = (id: string, todoTitle: string) => {
+  const handleOnSave = (id: string, todoTitle: string) => {
     setEditedTodo(EDITING_MODE_FALSE);
-    handleSaveChanges(id, todoTitle);
+    onSave(id, todoTitle);
   };
 
   const todoList = todos
-    ? Object.keys(todos).map((key: keyof typeof todos) => (
+    ? Object.keys(todos).map((key: string) => (
         <Todo
-          key={key.toString()}
-          id={key.toString()}
+          key={key}
+          id={key}
           title={todos[key].title}
-          done={todos[key].done}
-          handleChange={handleCheckboxChange}
-          editingMode={key === editedTodo}
-          handleClick={onClickedHandler}
-          handleSaveChanges={(id: string, todoTitle: string) =>
-            onSaveChangesHandler(id, todoTitle)
-          }
-          handleCancel={onCancelHandler}
-          handleDelete={handleDelete}
+          isDone={todos[key].done}
+          onChange={onChange}
+          isEditMode={key === editedTodo}
+          onClick={handleOnClick}
+          onSave={handleOnSave}
+          onCancel={handleOnCancel}
+          onDelete={onDelete}
         />
       ))
     : "Add your first todo!";

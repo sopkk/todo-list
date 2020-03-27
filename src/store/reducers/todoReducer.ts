@@ -1,28 +1,22 @@
-import * as actionTypes from "../actions/actionTypes";
-import { TodosType } from "../Types";
+import * as constants from "../constants";
+import { ITodos } from "../Types";
+import { Actions } from "../actions/actionTypes";
 
 export interface State {
-  todos: TodosType;
+  todos: ITodos;
 }
 
 const initialState: State = {
   todos: {}
 };
 
-const todoReducer = (
-  state = initialState,
-  action: actionTypes.TodoActionTypes
-): State => {
+const todoReducer = (state = initialState, action: Actions): State => {
   switch (action.type) {
-    case actionTypes.GET_TODOS_START:
-      return state;
-    case actionTypes.GET_TODOS_SUCCESS:
+    case constants.GET_TODOS_SUCCESS:
       return { ...state, todos: action.payload };
-    case actionTypes.GET_TODOS_FAILED:
+    case constants.GET_TODOS_FAILED:
       return state;
-    case actionTypes.ADD_TODO_START:
-      return state;
-    case actionTypes.ADD_TODO_SUCCESS:
+    case constants.ADD_TODO_SUCCESS:
       return {
         ...state,
         todos: {
@@ -30,9 +24,9 @@ const todoReducer = (
           [action.payload.id]: action.payload.todo
         }
       };
-    case actionTypes.ADD_TODO_FAILED:
+    case constants.ADD_TODO_FAILED:
       return state;
-    case actionTypes.EDIT_TODO_TITLE_SUCCESS:
+    case constants.EDIT_TODO_TITLE_SUCCESS:
       return {
         ...state,
         todos: {
@@ -43,14 +37,14 @@ const todoReducer = (
           }
         }
       };
-    case actionTypes.DELETE_TODO_SUCCESS:
+    case constants.DELETE_TODO_SUCCESS:
       const updatedTodos = { ...state.todos };
       delete updatedTodos[action.payload.id];
       return {
         ...state,
         todos: updatedTodos
       };
-    case actionTypes.EDIT_CHECKED_TODO_SUCCESS:
+    case constants.EDIT_CHECKED_TODO_SUCCESS:
       return {
         ...state,
         todos: {

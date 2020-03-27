@@ -1,14 +1,14 @@
 import { Dispatch } from "redux";
 import axios from "axios";
 
-import * as actionTypes from "./actionTypes";
-import { TodosType, TodoType } from "../Types";
+import { Actions } from "./actionTypes";
+import { ITodos, ITodo } from "../Types";
+import * as constants from "../constants";
 
 const BASE_URL: string = "https://todo-list-b7001.firebaseio.com";
 
 export const getTodos = () => {
   return (dispatch: Dispatch) => {
-    dispatch(getTodosStart());
     axios
       .get(`${BASE_URL}/todos.json`)
       .then(response => {
@@ -20,54 +20,41 @@ export const getTodos = () => {
   };
 };
 
-const getTodosStart = (): actionTypes.TodoActionTypes => ({
-  type: actionTypes.GET_TODOS_START
-});
-
-const getTodosSuccess = (payload: TodosType): actionTypes.TodoActionTypes => ({
-  type: actionTypes.GET_TODOS_SUCCESS,
+const getTodosSuccess = (payload: ITodos): Actions => ({
+  type: constants.GET_TODOS_SUCCESS,
   payload: payload
 });
 
-const getTodosFailed = (error: Error): actionTypes.TodoActionTypes => ({
-  type: actionTypes.GET_TODOS_FAILED,
+const getTodosFailed = (error: Error): Actions => ({
+  type: constants.GET_TODOS_FAILED,
   error: error
 });
 
-export const addTodo = (todo: TodoType) => {
+export const addTodo = (todo: ITodo) => {
   return (dispatch: Dispatch) => {
-    dispatch(addTodoStart());
     axios
       .post(`${BASE_URL}/todos.json`, todo)
       .then(response => {
-        dispatch(addTodoSucces(response.data, todo));
+        dispatch(addTodoSucces(response.data.name, todo));
       })
       .catch((error: Error) => dispatch(addTodoFailed(error)));
   };
 };
 
-const addTodoStart = (): actionTypes.TodoActionTypes => ({
-  type: actionTypes.ADD_TODO_START
-});
-
-const addTodoSucces = (
-  id: string,
-  todo: TodoType
-): actionTypes.TodoActionTypes => ({
-  type: actionTypes.ADD_TODO_SUCCESS,
+const addTodoSucces = (id: string, todo: ITodo): Actions => ({
+  type: constants.ADD_TODO_SUCCESS,
   payload: { id: id, todo: todo }
 });
 
-const addTodoFailed = (error: Error): actionTypes.TodoActionTypes => ({
-  type: actionTypes.ADD_TODO_FAILED,
+const addTodoFailed = (error: Error): Actions => ({
+  type: constants.ADD_TODO_FAILED,
   error: error
 });
 
 export const editTodoTitle = (id: string, updatedTodoTitle: string) => {
   return (dispatch: Dispatch) => {
-    dispatch(editTodoTitleStart());
     axios
-      .patch(`${BASE_URL}/todos/${id}.json`, { title: updatedTodoTitle })
+      .put(`${BASE_URL}/todos/${id}/title.json`, `"${updatedTodoTitle}"`)
       .then(() => {
         dispatch(editTodoTitleSuccess(id, updatedTodoTitle));
       })
@@ -77,26 +64,21 @@ export const editTodoTitle = (id: string, updatedTodoTitle: string) => {
   };
 };
 
-const editTodoTitleStart = (): actionTypes.TodoActionTypes => ({
-  type: actionTypes.EDIT_CHECKED_TODO_START
-});
-
 const editTodoTitleSuccess = (
   id: string,
   updatedTodoTitle: string
-): actionTypes.TodoActionTypes => ({
-  type: actionTypes.EDIT_TODO_TITLE_SUCCESS,
+): Actions => ({
+  type: constants.EDIT_TODO_TITLE_SUCCESS,
   payload: { id: id, updatedTodoTitle: updatedTodoTitle }
 });
 
-const editTodoTitleFailed = (error: Error): actionTypes.TodoActionTypes => ({
-  type: actionTypes.EDIT_TODO_TITLE_FAILED,
+const editTodoTitleFailed = (error: Error): Actions => ({
+  type: constants.EDIT_TODO_TITLE_FAILED,
   error: error
 });
 
 export const deleteTodo = (id: string) => {
   return (dispatch: Dispatch) => {
-    dispatch(deleteTodoStart());
     axios
       .delete(`${BASE_URL}/todos/${id}.json`)
       .then(() => {
@@ -108,25 +90,20 @@ export const deleteTodo = (id: string) => {
   };
 };
 
-const deleteTodoStart = (): actionTypes.TodoActionTypes => ({
-  type: actionTypes.DELETE_TODO_START
-});
-
-const deleteTodoSuccess = (id: string): actionTypes.TodoActionTypes => ({
-  type: actionTypes.DELETE_TODO_SUCCESS,
+const deleteTodoSuccess = (id: string): Actions => ({
+  type: constants.DELETE_TODO_SUCCESS,
   payload: { id: id }
 });
 
-const deleteTodoFailed = (error: Error): actionTypes.TodoActionTypes => ({
-  type: actionTypes.DELETE_TODO_FAILED,
+const deleteTodoFailed = (error: Error): Actions => ({
+  type: constants.DELETE_TODO_FAILED,
   error: error
 });
 
 export const editCheckedTodo = (id: string, done: boolean) => {
   return (dispatch: Dispatch) => {
-    dispatch(editCheckedTodoStart());
     axios
-      .patch(`${BASE_URL}/todos/${id}.json`, { done: done })
+      .put(`${BASE_URL}/todos/${id}/done.json`, done)
       .then(() => {
         dispatch(editCheckedTodoSuccess(id));
       })
@@ -136,16 +113,12 @@ export const editCheckedTodo = (id: string, done: boolean) => {
   };
 };
 
-const editCheckedTodoStart = (): actionTypes.TodoActionTypes => ({
-  type: actionTypes.EDIT_CHECKED_TODO_START
-});
-
-const editCheckedTodoSuccess = (id: string): actionTypes.TodoActionTypes => ({
-  type: actionTypes.EDIT_CHECKED_TODO_SUCCESS,
+const editCheckedTodoSuccess = (id: string): Actions => ({
+  type: constants.EDIT_CHECKED_TODO_SUCCESS,
   payload: { id: id }
 });
 
-const editCheckedTodoFailed = (error: Error): actionTypes.TodoActionTypes => ({
-  type: actionTypes.EDIT_CHECKED_TODO_FAILED,
+const editCheckedTodoFailed = (error: Error): Actions => ({
+  type: constants.EDIT_CHECKED_TODO_FAILED,
   error: error
 });
